@@ -2,11 +2,12 @@
 #define MUSICA_H
 #include <iostream>
 #include <string>
+
 using namespace std;
 
 class Musica {
- public:
 
+ public:
 
  Musica (string, string, string); // construtor para Titulo, Autor e Nome do arquivo
  Musica (string, string, string, string); // construtor para Titulo, Autor, Trecho e Nome do arquivo
@@ -16,6 +17,7 @@ class Musica {
  string getAutor ();
  string getData ();
  string getTrecho ();
+ string getNomeArquivo();
 
 // void setTitulo ();
 

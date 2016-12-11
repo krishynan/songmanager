@@ -16,6 +16,7 @@ void Repositorio::insereMusica (Musica &m) {
   vMusicas.push_back (&m);
 }
 
+/*
 void Repositorio::exibeMusica (int i) {
   (vMusicas[i]).getMusicaInteira();
-}
+} */
