@@ -11,3 +11,11 @@ Repositorio::Repositorio () {}
 Repositorio::Repositorio (const Repositorio &r) {
  vMusicas = r.vMusicas;
 }
+
+void Repositorio::insereMusica (Musica &m) {
+  vMusicas.push_back (&m);
+}
+
+void Repositorio::exibeMusica (int i) {
+  (vMusicas[i]).getMusicaInteira();
+}

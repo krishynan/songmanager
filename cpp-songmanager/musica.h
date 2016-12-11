@@ -7,12 +7,15 @@ using namespace std;
 class Musica {
  public:
 
- Musica (string, string, string);
+
+ Musica (string, string, string); // construtor para Titulo, Autor e Nome do arquivo
+ Musica (string, string, string, string); // construtor para Titulo, Autor, Trecho e Nome do arquivo
+ Musica (string, string, string, string, string); // construtor para Titulo, Autor, Trecho, Data e Nome do arquivo
 
  string getTitulo ();
  string getAutor ();
  string getData ();
- string getLetra ();
+ string getTrecho ();
 
 // void setTitulo ();
 
@@ -22,7 +25,7 @@ class Musica {
 
  private:
 
- string Titulo, Autor, Data, Letra, NomeArquivo;
+ string Titulo, Autor, Data, Trecho, NomeArquivo;
 
 };
 

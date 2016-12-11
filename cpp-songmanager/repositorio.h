@@ -19,18 +19,20 @@
 using namespace std;
 
 class Repositorio {
- friend ostream &operator<< (ostream &, Repositorio &);
-
+ friend ostream &operator<< (ostream &, Repositorio &); //operador sobrecarregado para imprimir todos os resultados da pesquisa
  public:
  Repositorio ();
 
  Repositorio (const Repositorio &);
 
- void insereMusica (Musica &);
+ void insereMusica (Musica &); //função para inserir uma nova musica no vetor de resultados
+
+ void exibeMusica (int);
 
  Repositorio operator+ (const Repositorio &);
 
  private:
- vector <Musica *> vMusicas;
+ vector <Musica *> vMusicas; //vetor de musicas para salvar os resultados da pesquisa
 };
+
 #endif
