@@ -1,0 +1,22 @@
+---
+abstract: 'Perl extension for functions that analyze and search lyrics on text files'
+author:
+  - 'A. U. Thor <a.u.thor@a.galaxy.far.far.away>'
+build_requires:
+  ExtUtils::MakeMaker: '0'
+configure_requires:
+  ExtUtils::MakeMaker: '0'
+dynamic_config: 0
+generated_by: 'ExtUtils::MakeMaker version 7.16, CPAN::Meta::Converter version 2.150005'
+license: unknown
+meta-spec:
+  url: http://module-build.sourceforge.net/META-spec-v1.4.html
+  version: '1.4'
+name: songmanager
+no_index:
+  directory:
+    - t
+    - inc
+requires: {}
+version: '0.01'
+x_serialization_backend: 'CPAN::Meta::YAML version 0.018'

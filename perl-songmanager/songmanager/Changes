@@ -1,0 +1,6 @@
+Revision history for Perl extension songmanager.
+
+0.01  Thu Nov 24 14:47:56 2016
+	- original version; created by h2xs 1.23 with options
+		-n songmanager
+
