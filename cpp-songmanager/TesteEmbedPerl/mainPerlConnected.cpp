@@ -8,7 +8,7 @@ using namespace std;
 
 static PerlInterpreter *my_perl;
 
-/* Inicialização para linkar a biblioteca Glob ao modulo perl */
+/* Inicialização para linkar bibliotecas dinamicas ao modulo perl */
 EXTERN_C void xs_init (pTHX);
 
 EXTERN_C void boot_DynaLoader (pTHX_ CV* cv);
@@ -43,20 +43,39 @@ xs_init(pTHX)
 //     LEAVE;
 // }
 
+void ObtemPesquisa () {
+  string busca1,busca2;
+
+	cout << "Digite o que você deseja pesquisar: " << endl;
+  getline(cin,busca1);
+  cout << "Digite o termo a ser pesquisado: " << endl;
+  getline(cin,busca2);
+
+	char *busca1c = new char[busca1.length() + 1];
+	strcpy(busca1c, busca1.c_str());
+	char *busca2c = new char[busca2.length() + 1];
+	strcpy(busca2c, busca2.c_str());
+
+  char *args[] = {busca1c,busca2c,NULL};
+  call_argv("PesquisaGlobal", G_DISCARD, args);
+}
 
 int main (int argc,char **argv, char **env) {
 
-  char *my_argv[] = {"", "pesquisaArquivos.pl"}; /* Nome do programa .pl */
-  static char *args[] = {"a","Michael", NULL};
+  char *my_argv[] = {"", "songmanager.pm"}; /* Nome do programa .pl */
+//   char *args[] = {"p","Walk", NULL};
 
   PERL_SYS_INIT3(&argc,&argv,&env);     /* Inicialização da chamada do codigo em perl*/
   my_perl = perl_alloc();
   perl_construct (my_perl);             /* */
   perl_parse(my_perl, xs_init, 2, my_argv, NULL);
   PL_exit_flags |= PERL_EXIT_DESTRUCT_END;
+
 //  perl_run(my_perl);
 
-  call_argv("pesquisaGlobal", G_DISCARD, args);
+//  call_argv("pesquisaGlobal", G_DISCARD, args);
+
+  ObtemPesquisa();
 
   perl_destruct(my_perl);
   perl_free(my_perl);

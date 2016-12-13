@@ -6,7 +6,7 @@ LDFLAGS=$(shell perl -MExtUtils::Embed -e ldopts)
 
 OBJECTS = $(PROGRAM).o
 
-PROGRAM = testaAutor
+PROGRAM = mainPerlConnected
 
 all:  $(PROGRAM)
 
