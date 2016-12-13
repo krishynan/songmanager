@@ -1,24 +1,24 @@
-CC = g++
-CFLAGS = -Wall
+CC=g++
+LD=g++
 
-OBJECTS = musica.o repositorio.o main.o
-MENU_OBJECTS = menu.o main_menu.o
+CCFLAGS=$(shell perl -MExtUtils::Embed -e ccopts)
+LDFLAGS=$(shell perl -MExtUtils::Embed -e ldopts)
 
-PROGRAM = main
-MENU = menu
+#OBJECTS = $(PROGRAM)Aux
+POBJECTS=$(PROGRAM).o
 
-all: $(PROGRAM) $(MENU)
+PROGRAM = SongManager
 
-$(PROGRAM) : $(OBJECTS)
-		$(CC) $(OBJECTS) -o $@
+all: $(PROGRAM)
 
-menu_principal: $(MENU)
+#$(OBJECTS).o: $(OBJECTS).cpp
+#		$(CC) $(CCFLAGS) -o $@ -c $<
 
-$(MENU) : $(MENU_OBJECTS)
-		$(CC) $(MENU_OBJECTS) -o $@
+$(PROGRAM).o: $(PROGRAM).cpp
+		$(CC) $(CCFLAGS) -o $@ -c $<
 
-.c.o:
-		$(CC) $(CFLAGS) -c $<
+$(PROGRAM): $(PROGRAM).o
+		$(LD) -o $@ $(OBJECTS) $< $(LDFLAGS)
 
 clean:
-		rm -vf $(PROGRAM) $(MENU) $(OBJECTS) $(MENU_OBJECTS)
+	rm -f $(PROGRAM) $(POBJECTS)

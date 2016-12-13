@@ -17,8 +17,12 @@ int main () {
   repositorio.insereMusica(musica2);
 
   cout << "Depois das inserções" << endl;
-  cout << repositorio <<endl;
+  cout << repositorio << endl;
+  cout << "Trecho da musica 2:" << endl;
+  cout << musica2.getTrecho() << endl;
+  cout << "Tentativa de imprimir a data da musica2 :" << endl;
+  cout << musica2.getData() <<endl;
 
-  return 0;
+ return 0;
 
 }
