@@ -19,7 +19,7 @@ sub encontraLetraDupla{
 	my $arquivoUmaLinha = $arquivo;
 	my $trechoCompleto;
 	my $aux;
-	
+
 	$arquivoUmaLinha =~ tr{\n\n}{ };
 	$arquivoUmaLinha =~ tr{\n}{ };
 	if ($arquivoUmaLinha =~ /\sLetra:.*($trecho1(.*)$trecho2).*/i) {
@@ -39,7 +39,7 @@ sub encontraLetraDupla{
 sub encontraAutor{
 	my $arquivo = $_[0];
 	my ($autor);
-	
+
 	($autor) = ($arquivo =~ /^Autor:([^\n\r]*)/i);
 	return $autor;
 }
@@ -47,7 +47,7 @@ sub encontraAutor{
 sub encontraTitulo{
 	my $arquivo = $_[0];
 	my ($titulo);
-	
+
 	($titulo) = ($arquivo =~ /[\n\r]Titulo:([^\n\r]*)/i);
 	return $titulo;
 }
@@ -57,7 +57,7 @@ sub encontraLetra{
 	my $trecho = $_[1];
 	my $arquivoUmaLinha = $arquivo;
 	my $trechoCompleto;
-	
+
 	$arquivoUmaLinha =~ tr{\n\n}{ };
 	$arquivoUmaLinha =~ tr{\n}{ };
 	if ($arquivoUmaLinha =~ /\sLetra:(.*$trecho.*)/i) {
@@ -70,7 +70,7 @@ sub encontraLetra{
 sub encontraData{
 	my $arquivo = $_[0];
 	my ($dia,$mes,$ano);
-	
+
 	($dia, $mes, $ano) = ($arquivo =~ /(\d\d)\/(\d\d)\/(\d\d\d\d)/);
 	return ($dia,$mes,$ano);
 }
@@ -85,7 +85,7 @@ $achados = "";
 	foreach my $arquivos (@arquivos) {
 		open FILE, $arquivos or die "Couldn't open file: $!";
 		my $arquivo = do {local $/; <FILE>};
-		
+
 		if ($tipoPesquisa =~ /a(?:utor)?/i) {
 			$atual = encontraAutor($arquivo);
 			if ($atual=~ /^$procurado$/i) {
@@ -111,7 +111,7 @@ $achados = "";
 				if ($atual =~ /[\w\s]*$procurado[\w\s]*/i) {
 					$achados .= "Musica possivel:$atual\n";
 				}
-			}			
+			}
 		}
 		if ($tipoPesquisa =~ /p(?:edaço)?/i) {
 			$atual = encontraLetra($arquivo,$procurado);
@@ -127,17 +127,17 @@ $achados = "";
 				$achados .= "Musica:";
 				$achados .= encontraTitulo($arquivo);
 				$achados .= "\nTrecho:\n$atual\n";
-			}			
+			}
 		}
 		if ($tipoPesquisa =~ /L(?:ançamento)?/i) {
 			($dia,$mes,$ano) = encontraData($arquivo);#nao uso o dia e o mes pra nada ainda, fica pro futuro
 			if ($procurado==$ano) {
 				$achados .= encontraTitulo($arquivo);
 				$achados .= "\n";
-			}			
+			}
 		}
 	}
-	
+
 	if ($tipoPesquisa =~ /d(?:upla)?/i) {
 		print "Procurou por: \"$procurado\" e \"$termo1\"\n";
 	}
@@ -147,4 +147,4 @@ $achados = "";
 	print "$achados";
 }
 
-pesquisaGlobal("p","WALK");
+# pesquisaGlobal("p","WALK");

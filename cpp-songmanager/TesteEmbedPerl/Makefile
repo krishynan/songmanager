@@ -8,7 +8,7 @@ OBJECTS = $(PROGRAM).o
 
 PROGRAM = testaAutor
 
-all: $(PROGRAM)
+all:  $(PROGRAM)
 
 $(PROGRAM).o: $(PROGRAM).cpp
 		$(CC) $(CCFLAGS) -o $@ -c $<

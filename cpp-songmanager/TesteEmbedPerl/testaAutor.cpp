@@ -8,6 +8,23 @@ using namespace std;
 
 static PerlInterpreter *my_perl;
 
+/* Inicialização para linkar a biblioteca Glob ao modulo perl */
+EXTERN_C void xs_init (pTHX);
+
+EXTERN_C void boot_DynaLoader (pTHX_ CV* cv);
+
+EXTERN_C void
+xs_init(pTHX)
+{
+	char *file = __FILE__;
+	dXSUB_SYS;
+
+	/* DynaLoader is a special case */
+	newXS("DynaLoader::boot_DynaLoader", boot_DynaLoader, file);
+}
+
+/* Fim da inicialização */
+
 // static void BuscaAutor (int a, int b) {
 //
 //     dSP;                      /* Inicialização da pilha */
@@ -26,25 +43,20 @@ static PerlInterpreter *my_perl;
 //     LEAVE;
 // }
 
+
 int main (int argc,char **argv, char **env) {
 
   char *my_argv[] = {"", "pesquisaArquivos.pl"}; /* Nome do programa .pl */
-  static char *args[] = {"a","Michael", NULL};
-  //
-  // EXTERN_C void boot_DynaLoader (pTHX_ CV* cv); //EXTERN_C void boot_DBI (pTHX_ CV* cv);
-  // EXTERN_C void xs_init(pTHX)  {
-  //   char *file = __FILE__; /* DynaLoader is a special case */
-  //   newXS("DynaLoader::boot_DynaLoader", boot_DynaLoader, file); //newXS("DBI::bootstrap", boot_DBI, file);
-  // }
+  static char *args[] = {"p","Walk", NULL};
 
   PERL_SYS_INIT3(&argc,&argv,&env);     /* Inicialização da chamada do codigo em perl*/
   my_perl = perl_alloc();
   perl_construct (my_perl);             /* */
-  perl_parse(my_perl, NULL, 2, my_argv, NULL);
+  perl_parse(my_perl, xs_init, 2, my_argv, NULL);
   PL_exit_flags |= PERL_EXIT_DESTRUCT_END;
 //  perl_run(my_perl);
 
-  call_argv("PesquisaGlobal", G_DISCARD, args);
+  call_argv("pesquisaGlobal", G_DISCARD, args);
 
   perl_destruct(my_perl);
   perl_free(my_perl);
