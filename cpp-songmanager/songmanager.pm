@@ -112,6 +112,8 @@ my $tipoPesquisa = $_[0];
 my $procurado = $_[1];
 my $termo1 = $_[2];
 my ($achados,$atual,$dia,$mes,$ano);
+my @titulos;
+my @nomesArquivos;
 $achados = "";
 
 	foreach my $arquivos (glob("songs/*.txt")) {
@@ -125,11 +127,13 @@ $achados = "";
 					$achados .= "Musica dele:";
 					$achados .= EncontraTitulo($arquivo);
 					$achados .= "\n";
+					push @titulos, $atual;
 				}
 				else {
 					if ($atual =~ /[\w\s]*$procurado[\w\s]*/i) {  #se nao for exato mas ainda acha
 						if (!($achados =~ /[\w\s]*$atual[\w\s]*/i)){  #confere se ja nao sugeriu esse artista antes
 							$achados .= "Artista possivel:$atual\n";
+							push @titulos, $atual;
 						}
 					}
 				}
@@ -143,6 +147,8 @@ $achados = "";
 				else {
 					if ($atual =~ /[\w\s]*$procurado[\w\s]*/i) {  #nao exato retorna o titulo
 						$achados .= "Musica possivel:$atual\n";
+						push @titulos, $atual;
+						push @nomesArquivos, $arquivos;
 					}
 				}
 			}
@@ -152,6 +158,8 @@ $achados = "";
 					$achados .= "Musica:";
 					$achados .= EncontraTitulo($arquivo);
 					$achados .= "\nTrecho:\n$atual\n";
+					push @titulos, $atual;
+					push @nomesArquivos, $arquivos;
 				}
 			}
 			if ($tipoPesquisa =~ /^d(?:upla)?/i) {
@@ -160,6 +168,8 @@ $achados = "";
 					$achados .= "Musica:";
 					$achados .= EncontraTitulo($arquivo);
 					$achados .= "\nTrecho:\n$atual\n";
+					push @titulos, $atual;
+					push @nomesArquivos, $arquivos;
 				}
 			}
 			if ($tipoPesquisa =~ /^L(?:ançamento)?/i) {
@@ -167,11 +177,14 @@ $achados = "";
 				if ($procurado eq $ano) {
 					$achados .= EncontraTitulo($arquivo);
 					$achados .= "\n";
+					push @titulos, $atual;
+					push @nomesArquivos, $arquivos;
 				}
 			}
 		}
 	}
 	print $achados;
+	return @titulos,@nomesArquivos;
 }
 # Preloaded methods go here.
 

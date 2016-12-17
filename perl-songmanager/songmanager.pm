@@ -1,5 +1,5 @@
-package songmanager;
-package biblioteca;
+#package songmanager;
+#package biblioteca;
 
 use 5.014002;
 use strict;
@@ -19,20 +19,20 @@ our @ISA = qw(Exporter);
 # If you do not need this, moving things directly into @EXPORT or @EXPORT_OK
 # will save memory.
 our %EXPORT_TAGS = ( 'all' => [ qw(ValidaArquivo EncontraAutor EncontraTitulo EncontraData EncontraLetra EncontraLetraDupla PesquisaGlobal
-	
+
 ) ] );
 
 #our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 our @EXPORT_OK = qw( ValidaArquivo EncontraAutor EncontraTitulo EncontraData EncontraLetra EncontraLetraDupla PesquisaGlobal );
 our @EXPORT = qw(
-	
+
 );
 
 our $VERSION = '0.01';
 
 sub ValidaArquivo{
 	my $arquivo = $_[0];
-	
+
 	if ($arquivo =~ /\n{3,}/) {   #só pode ter 1 linha vazia no maximo
 		return 1;
 	}
@@ -48,7 +48,7 @@ sub ValidaArquivo{
 sub EncontraAutor{
 	my $arquivo = $_[0];
 	my ($autor);
-	
+
 	($autor) = ($arquivo =~ /^Autor:([^\n\r]*)/i);
 	return $autor;
 }
@@ -56,15 +56,15 @@ sub EncontraAutor{
 sub EncontraTitulo{
 	my $arquivo = $_[0];
 	my ($titulo);
-	
+
 	($titulo) = ($arquivo =~ /[\n\r]Titulo:([^\n\r]*)/i);
 	return $titulo;
 }
 
-sub encontraData{
+sub EncontraData{
 	my $arquivo = $_[0];
 	my ($dia,$mes,$ano);
-	
+
 	($dia, $mes, $ano) = ($arquivo =~ /(\d\d)\/(\d\d)\/(\d\d\d\d)/);
 	return ($dia,$mes,$ano);
 }
@@ -74,7 +74,7 @@ sub EncontraLetra{
 	my $trecho = $_[1];
 	my $arquivoUmaLinha = $arquivo;
 	my $trechoCompleto;
-	
+
 	$arquivoUmaLinha =~ tr{\n\n}{ };
 	$arquivoUmaLinha =~ tr{\n}{ };
 	if ($arquivoUmaLinha =~ /\sLetra:(.*$trecho.*)/i) {
@@ -91,7 +91,7 @@ sub EncontraLetraDupla{
 	my $arquivoUmaLinha = $arquivo;
 	my $trechoCompleto;
 	my $aux;
-	
+
 	$arquivoUmaLinha =~ tr{\n\n}{ };
 	$arquivoUmaLinha =~ tr{\n}{ };
 	if ($arquivoUmaLinha =~ /\sLetra:.*($trecho1(.*)$trecho2).*/i) {
@@ -112,29 +112,33 @@ my $tipoPesquisa = $_[0];
 my $procurado = $_[1];
 my $termo1 = $_[2];
 my ($achados,$atual,$dia,$mes,$ano);
+my @titulos;
+my @nomesArquivos;
 $achados = "";
 
 	foreach my $arquivos (glob("songs/*.txt")) {
 		open FILE, $arquivos or die "Couldn't open file: $!";
 		my $arquivo = do {local $/; <FILE>};
-		
+
 		if (!ValidaArquivo($arquivo)){
-			if ($tipoPesquisa =~ /a(?:utor)?/i) {
-				$atual = EncontraAutor($arquivo);        
+			if ($tipoPesquisa =~ /^a(?:utor)?/i) {
+				$atual = EncontraAutor($arquivo);
 				if ($atual=~ /^$procurado$/i) {   #se for exato,devolve todas musicas que forem com o autor exato
 					$achados .= "Musica dele:";
 					$achados .= EncontraTitulo($arquivo);
 					$achados .= "\n";
+					push @titulos, $atual;
 				}
 				else {
 					if ($atual =~ /[\w\s]*$procurado[\w\s]*/i) {  #se nao for exato mas ainda acha
 						if (!($achados =~ /[\w\s]*$atual[\w\s]*/i)){  #confere se ja nao sugeriu esse artista antes
 							$achados .= "Artista possivel:$atual\n";
+							push @titulos, $atual;
 						}
 					}
 				}
 			}
-			if ($tipoPesquisa =~ /t(?:itulo)?/i) {
+			if ($tipoPesquisa =~ /^t(?:itulo)?/i) {
 				$atual = EncontraTitulo($arquivo);
 				if ($atual=~ /^$procurado$/i) {  #exato mostra a musica inteira
 					$achados .= $arquivo;
@@ -143,35 +147,44 @@ $achados = "";
 				else {
 					if ($atual =~ /[\w\s]*$procurado[\w\s]*/i) {  #nao exato retorna o titulo
 						$achados .= "Musica possivel:$atual\n";
+						push @titulos, $atual;
+						push @nomesArquivos, $arquivos;
 					}
-				}			
+				}
 			}
-			if ($tipoPesquisa =~ /p(?:edaço)?/i) {
+			if ($tipoPesquisa =~ /^p(?:edaço)?/i) {
 				$atual = EncontraLetra($arquivo,$procurado);
 				if ($atual) {
 					$achados .= "Musica:";
 					$achados .= EncontraTitulo($arquivo);
 					$achados .= "\nTrecho:\n$atual\n";
+					push @titulos, $atual;
+					push @nomesArquivos, $arquivos;
 				}
 			}
-			if ($tipoPesquisa =~ /d(?:upla)?/i) {
+			if ($tipoPesquisa =~ /^d(?:upla)?/i) {
 				$atual = EncontraLetraDupla($arquivo,$procurado,$termo1);
 				if ($atual) {
 					$achados .= "Musica:";
 					$achados .= EncontraTitulo($arquivo);
 					$achados .= "\nTrecho:\n$atual\n";
-				}			
+					push @titulos, $atual;
+					push @nomesArquivos, $arquivos;
+				}
 			}
-			if ($tipoPesquisa =~ /L(?:ançamento)?/i) {
+			if ($tipoPesquisa =~ /^L(?:ançamento)?/i) {
 				($dia,$mes,$ano) = EncontraData($arquivo);#nao uso o dia e o mes pra nada ainda, fica pro futuro
-				if ($procurado==$ano) {
+				if ($procurado eq $ano) {
 					$achados .= EncontraTitulo($arquivo);
 					$achados .= "\n";
-				}			
+					push @titulos, $atual;
+					push @nomesArquivos, $arquivos;
+				}
 			}
 		}
 	}
 	print $achados;
+	return @titulos,@nomesArquivos;
 }
 # Preloaded methods go here.
 
@@ -190,12 +203,12 @@ songmanager - Perl extension for functions that analyze and search lyrics on tex
 
 =head1 DESCRIPTION
 	Analyze lyrics using this template:
-	
+
 	Autor:Author
 	Titulo:Title
 	Letra:Type the lyrics here
 	It accepts new line
-	
+
 	Up to one empty line
 	Thanks
 
@@ -217,4 +230,3 @@ at your option, any later version of Perl 5 you may have available.
 
 
 =cut
-
