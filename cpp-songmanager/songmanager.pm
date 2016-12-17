@@ -119,7 +119,7 @@ $achados = "";
 		my $arquivo = do {local $/; <FILE>};
 
 		if (!ValidaArquivo($arquivo)){
-			if ($tipoPesquisa =~ /a(?:utor)?/i) {
+			if ($tipoPesquisa =~ /^a(?:utor)?/i) {
 				$atual = EncontraAutor($arquivo);
 				if ($atual=~ /^$procurado$/i) {   #se for exato,devolve todas musicas que forem com o autor exato
 					$achados .= "Musica dele:";
@@ -134,7 +134,7 @@ $achados = "";
 					}
 				}
 			}
-			if ($tipoPesquisa =~ /t(?:itulo)?/i) {
+			if ($tipoPesquisa =~ /^t(?:itulo)?/i) {
 				$atual = EncontraTitulo($arquivo);
 				if ($atual=~ /^$procurado$/i) {  #exato mostra a musica inteira
 					$achados .= $arquivo;
@@ -146,7 +146,7 @@ $achados = "";
 					}
 				}
 			}
-			if ($tipoPesquisa =~ /p(?:edaço)?/i) {
+			if ($tipoPesquisa =~ /^p(?:edaço)?/i) {
 				$atual = EncontraLetra($arquivo,$procurado);
 				if ($atual) {
 					$achados .= "Musica:";
@@ -154,7 +154,7 @@ $achados = "";
 					$achados .= "\nTrecho:\n$atual\n";
 				}
 			}
-			if ($tipoPesquisa =~ /d(?:upla)?/i) {
+			if ($tipoPesquisa =~ /^d(?:upla)?/i) {
 				$atual = EncontraLetraDupla($arquivo,$procurado,$termo1);
 				if ($atual) {
 					$achados .= "Musica:";
@@ -162,9 +162,9 @@ $achados = "";
 					$achados .= "\nTrecho:\n$atual\n";
 				}
 			}
-			if ($tipoPesquisa =~ /L(?:ançamento)?/i) {
+			if ($tipoPesquisa =~ /^L(?:ançamento)?/i) {
 				($dia,$mes,$ano) = EncontraData($arquivo);#nao uso o dia e o mes pra nada ainda, fica pro futuro
-				if ($procurado==$ano) {
+				if ($procurado eq $ano) {
 					$achados .= EncontraTitulo($arquivo);
 					$achados .= "\n";
 				}
