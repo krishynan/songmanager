@@ -1,7 +1,7 @@
 CC=g++
 LD=g++
 
-CCFLAGS=$(shell perl -MExtUtils::Embed -e ccopts)
+CCFLAGS=$(shell perl -MExtUtils::Embed -e ccopts)  
 LDFLAGS=$(shell perl -MExtUtils::Embed -e ldopts)
 
 AUXILIAR = musica

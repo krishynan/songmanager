@@ -3,6 +3,10 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <sstream>
+#include <fstream>
+#include <stdio.h>
+#include <stdlib.h>
 #include "musica.h"
 
 #define SongManagerPerl  "songmanager.pm"

@@ -22,10 +22,23 @@ void newMusicFile(string newFile) {
 	string n_a;
 	int contador=1;
 
-	while (file_exists((n_a + DIRETORIO_DE_MUSICAS + to_string(contador)) + ".txt")) contador++;
+	n_a = newFile;
+	string result;
+	std::stringstream sstm;
+	sstm << DIRETORIO_DE_MUSICAS << "songs/" << n_a << contador << ".txt";
+	result = sstm.str();
+	cout << result << endl;
 
-	ifstream  src(newFile, std::ios::binary);
-  ofstream  dst((n_a + DIRETORIO_DE_MUSICAS + to_string(contador) + ".txt"), std::ios::binary);
+	while (file_exists(ConverteStringChar(result)))
+	{
+		contador++;
+		sstm << n_a << DIRETORIO_DE_MUSICAS << contador;
+		result = sstm.str();
+	}
+
+	cout << result << endl;
+	ifstream  src (ConverteStringChar(newFile));
+  ofstream  dst(ConverteStringChar(result));
 
 	dst << src.rdbuf();
 }
