@@ -6,6 +6,18 @@
 
 using namespace std;
 
+void ClearScreen () {
+		int i;
+		for (i=0; i<5; i++) {cout << endl;}
+}
+
+void FormataImpressao ()
+{
+	int i;
+	for (i=0; i<10; i++) {cout << "****";}
+	cout << endl;
+}
+
 void ImprimeMusica (Musica musica) {
 		musica.getMusicaInteira();
 }
@@ -24,34 +36,62 @@ string InsereDiretorio (string nome_arquivo)
 	return result;
 }
 
-void NovaMusica(string newFile) {
+void NovaMusica(string novoArquivo)
+{
 	int contador=1;
+	int Arquivo_e_valido;																														 /* Chama a subrotina ValidaArquivo para conferir se a formatação do */
+																																									 /* arquivo é valida */
+	char *my_argv[] = {ConverteStringChar(""), ConverteStringChar(SongManagerPerl)}; /* Nome do programa .pl */
+	my_perl = perl_alloc();
+  perl_construct (my_perl);             /* */
+  perl_parse(my_perl, xs_init, 2, my_argv, NULL);
+  PL_exit_flags |= PERL_EXIT_DESTRUCT_END;
+	dSP;                      /* Inicialização da pilha */
+	ENTER;
+	PUSHMARK(SP);             /* Ponteiro para pilha */
 
-	string result;
-	ostringstream conversora;
-	conversora << DIRETORIO_DE_MUSICAS << "song" << contador << ".txt"; //<< contador << ".txt";
-	result = conversora.str();
+	char *args[] = {ConverteStringChar(novoArquivo),NULL};
+	call_argv("ValidaArquivo", G_DISCARD, args);
 
+	SPAGAIN;                         /* Atualiza o ponteiro de Pilha */
 
-	while (file_exists(ConverteStringChar(result))){
-		conversora.str("");
-		conversora.clear();
+	Arquivo_e_valido = POPi;
+
+	PUTBACK;
+	FREETMPS;                        /* libera os valores da pilha */
+	LEAVE;
+
+	perl_destruct(my_perl);
+	perl_free(my_perl);
+
+	if (!(Arquivo_e_valido))																												/* Se a formatação for válida, insere o arquivo como song#.txt */
+																																									/* na pasta 'songs' */
+	{
+		string result;
+		ostringstream conversora;
 		conversora << DIRETORIO_DE_MUSICAS << "song" << contador << ".txt"; //<< contador << ".txt";
 		result = conversora.str();
-		contador++;
+
+		while (file_exists(ConverteStringChar(result))){
+			conversora.str("");
+			conversora.clear();
+			conversora << DIRETORIO_DE_MUSICAS << "song" << contador << ".txt"; //<< contador << ".txt";
+			result = conversora.str();
+			contador++;
+		}
+
+		ifstream  arquivo_origem(ConverteStringChar(novoArquivo));
+		if (arquivo_origem.is_open()) {
+	  ofstream  arquivo_destino(ConverteStringChar(result));
+		arquivo_destino << arquivo_origem.rdbuf();
+		cout << "Musica " << novoArquivo << " adicionada com sucesso" << endl;
+	  }
+		else cout << "Erro ao adicionar música" << endl;
+
+		arquivo_origem.close();
 	}
-
-	ifstream  arquivo_origem(ConverteStringChar(newFile));
-	if (arquivo_origem.is_open()) {
-  ofstream  arquivo_destino(ConverteStringChar(result));
-	arquivo_destino << arquivo_origem.rdbuf();
-	cout << "Musica " << newFile << " adicionada com sucesso" << endl;
-  }
-	else cout << "Erro ao adicionar música" << endl;
-
-	arquivo_origem.close();
+	else cout << "O arquivo inserido não é válido" << endl;
 }
-
 bool file_exists(const char *fileName)
 {
     ifstream infile(fileName);
@@ -60,8 +100,7 @@ bool file_exists(const char *fileName)
 
 void RemoveMusica (string titulo)
 {
-	int escolha = 1;
-	vector <Musica> lista = BuscaMusica(titulo,escolha);
+	vector <Musica> lista = BuscaMusica(titulo,1);
 	string decisao;
 	int i,indice;
 
@@ -84,7 +123,6 @@ void RemoveMusica (string titulo)
 	}
 }
 
-
 /* Inicialização para linkar bibliotecas dinamicas ao modulo perl */
 EXTERN_C void xs_init(pTHX)
 {
@@ -96,7 +134,6 @@ EXTERN_C void xs_init(pTHX)
 }
 /* Fim da inicialização */
 
-
 /* Função que imprime os resultados da busca(exceto busca por artista e titulo) realizada pelo usuário. */
 void ObtemPesquisa (char *busca, char *termo, char *termo2)
 {
@@ -106,6 +143,7 @@ void ObtemPesquisa (char *busca, char *termo, char *termo2)
   perl_parse(my_perl, xs_init, 2, my_argv, NULL);
   PL_exit_flags |= PERL_EXIT_DESTRUCT_END;
 
+
   if (termo2 != NULL) {
     char *args[] = {busca,termo,termo2,NULL};
     call_argv("PesquisaGlobal", G_DISCARD, args);
@@ -114,6 +152,7 @@ void ObtemPesquisa (char *busca, char *termo, char *termo2)
     char *args[] = {busca,termo,NULL};
     call_argv("PesquisaGlobal", G_DISCARD, args);
   }
+
 
 	perl_destruct(my_perl);
 	perl_free(my_perl);
@@ -136,6 +175,7 @@ void RetornaMusicasArtista (vector <string> resultados) {
 	}
 	else if (indice == 0) {}
 	else {ObtemPesquisa(ConverteStringChar("Autor"),ConverteStringChar(resultados[indice -1]),NULL);}
+
 }
 
 /* Realiza a busca por artista e gera um vetor de resultados com os possiveis artistas compatíveis com a pesquisa.
@@ -200,6 +240,7 @@ void RetornaMusicaInteira (vector <Musica> resultados) {
 	}
 	else if (indice == 0) {}
 	else {resultados[indice-1].getMusicaInteira();}
+
 }
 
 
@@ -261,16 +302,18 @@ vector <Musica> BuscaMusica (string musica, int escolha) {
 void ImprimeMenuPesquisa () {
   int i=1;
   string busca,busca2;
+	ClearScreen();
 
-  cout << "Olá, bem-vindo ao menu de seleção do SongManager!" << endl
-     << "Escolha 1 para Pesquisa por um autor. Retorna todas musicas do autor se for exato" << endl
-     << "Escolha 2 para Pesquisa por um titulo. Retorna a musica inteira se for exato" << endl
-     << "Escolha 3 para Pesquisa por um ano de lancamento. Retorna os nomes das musicas" << endl
-     << "Escolha 4 para Pesquisa por um trecho. Retorna o titulo e um pedaco do trecho achado" << endl
-     << "Escolha 5 para Pesquisa por DOIS trechos desconectados. Retorna o titulo e um pedaco do trecho achado" << endl
-     << "Escolha 0 para sair do programa." << endl;
-     while (i != 0) {
-       cout << "\nEscolha a opção desejada:" << endl;
+		  cout << endl << "Olá, bem-vindo ao menu de seleção do SongManager!" << endl
+		     << "Escolha 1 para Pesquisa por um autor. Retorna todas musicas do autor se for exato" << endl
+		     << "Escolha 2 para Pesquisa por um titulo. Retorna a musica inteira se for exato" << endl
+		     << "Escolha 3 para Pesquisa por um ano de lancamento. Retorna os nomes das musicas" << endl
+		     << "Escolha 4 para Pesquisa por um trecho. Retorna o titulo e um pedaco do trecho achado" << endl
+		     << "Escolha 5 para Pesquisa por DOIS trechos desconectados. Retorna o titulo e um pedaco do trecho achado" << endl
+		     << "Escolha 0 para sair do programa." << endl;
+			 while (i != 0) {
+			 FormataImpressao();
+			 cout << "\nEscolha a opção desejada:" << endl;
        cin >> i;
        cin.ignore();
        switch (i) {
@@ -313,31 +356,33 @@ void ImprimeMenuPesquisa () {
 void ImprimeMenu () {
   int i=1;
   string entrada;
-     while (i != 0) {
-  	 cout << "Olá, bem-vindo ao menu de seleção do SongManager!" << endl
-     << "Escolha 1 para fazer uma pesquisa nas músicas cadastradas" << endl
-     << "Escolha 2 para adicionar uma música ao sistema." << endl
-     << "Escolha 3 para remover uma música cadastrada." << endl
-     << "Escolha 0 para sair do programa." << endl;
-       cout << "\nEscolha a opção desejada:" << endl;
-       cin >> i;
-       cin.ignore();
-       switch (i) {
-         case 1:
-             ImprimeMenuPesquisa();
-             break;
-         case 2:
-             cout << "Digite o nome do arquivo a ser inserido no sistema (\"nome.txt\")" << endl;
-             getline(cin,entrada);
-						 NovaMusica(entrada);
-             break;
-         case 3:
-             cout << "Digite parte do titulo da musica a ser removida:" << endl;
-             getline(cin,entrada);
-             RemoveMusica(entrada);
-             break;
-         case 0:
-             break;
-       }
-  }
+	ClearScreen();
+	while (i != 0) {
+	FormataImpressao();
+	 cout << "Olá, bem-vindo ao menu de seleção do SongManager!" << endl
+   << "Escolha 1 para fazer uma pesquisa nas músicas cadastradas" << endl
+   << "Escolha 2 para adicionar uma música ao sistema." << endl
+   << "Escolha 3 para remover uma música cadastrada." << endl
+   << "Escolha 0 para sair do programa." << endl;
+     cout << "\nEscolha a opção desejada:" << endl;
+     cin >> i;
+     cin.ignore();
+     switch (i) {
+       case 1:
+           ImprimeMenuPesquisa();
+           break;
+       case 2:
+           cout << "Digite o nome do arquivo a ser inserido no sistema (\"nome.txt\")" << endl;
+           getline(cin,entrada);
+					 NovaMusica(entrada);
+           break;
+       case 3:
+           cout << "Digite parte do titulo da musica a ser removida:" << endl;
+           getline(cin,entrada);
+           RemoveMusica(entrada);
+           break;
+       case 0:
+           break;
+     }
+	 }
 }

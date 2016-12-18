@@ -133,21 +133,15 @@ $achados = "";
 							push @titulos_E_Arquivos, $atual;
 						}
 					}
-				}
+				 }
 			}
 			if ($tipoPesquisa =~ /^t(?:itulo)?/i) {
 				$atual = EncontraTitulo($arquivo);
-				if ($atual=~ /^$procurado$/i) {  #exato mostra a musica inteira
-					$achados .= $arquivo;
-					$achados .= "\n";
-				}
-				else {
 					if ($atual =~ /[\w\s]*$procurado[\w\s]*/i) {  #nao exato retorna o titulo
 						$achados .= "Musica possivel:$atual\n";
 						push @titulos_E_Arquivos, $atual;
 						push @titulos_E_Arquivos, $arquivos;
 					}
-				}
 			}
 			if ($tipoPesquisa =~ /^p(?:edaço)?/i) {
 				$atual = EncontraLetra($arquivo,$procurado);

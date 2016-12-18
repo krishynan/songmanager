@@ -22,6 +22,10 @@ void ObtemPesquisa (char *, char *, char *);
 
 void ImprimeMenuPesquisa();
 
+void ClearScreen();
+
+void FormataImpressao();
+
 char *ConverteStringChar (string);
 
 void ImprimeMusica (Musica);
