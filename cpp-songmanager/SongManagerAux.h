@@ -6,7 +6,6 @@
 #include <sstream>
 #include <fstream>
 #include <stdio.h>
-#include <stdlib.h>
 #include "musica.h"
 
 #define SongManagerPerl  "songmanager.pm"
@@ -31,10 +30,16 @@ void RetornaMusicasArtista (vector <string>);
 
 void BuscaArtista (string);
 
-void BuscaMusica (string);
+vector <Musica> BuscaMusica (string, int);
 
 void RetornaMusicaInteira(vector <Musica>);
 
 bool file_exists(const char *);
 
-void newMusicFile(string);
+void NovaMusica(string);
+
+void RemoveMusica (string);
+
+void ImprimeMenu();
+
+string InsereDiretorio (string);

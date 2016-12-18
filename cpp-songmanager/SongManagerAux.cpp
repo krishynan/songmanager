@@ -6,7 +6,6 @@
 
 using namespace std;
 
-
 void ImprimeMusica (Musica musica) {
 		musica.getMusicaInteira();
 }
@@ -18,29 +17,39 @@ char * ConverteStringChar (string entrada)
 	return saida;
 }
 
-void newMusicFile(string newFile) {
-	string n_a;
+string InsereDiretorio (string nome_arquivo)
+{
+	string result;
+	result = (DIRETORIO_DE_MUSICAS + nome_arquivo);
+	return result;
+}
+
+void NovaMusica(string newFile) {
 	int contador=1;
 
-	n_a = newFile;
 	string result;
-	std::stringstream sstm;
-	sstm << DIRETORIO_DE_MUSICAS << "songs/" << n_a << contador << ".txt";
-	result = sstm.str();
-	cout << result << endl;
+	ostringstream conversora;
+	conversora << DIRETORIO_DE_MUSICAS << "song" << contador << ".txt"; //<< contador << ".txt";
+	result = conversora.str();
 
-	while (file_exists(ConverteStringChar(result)))
-	{
+
+	while (file_exists(ConverteStringChar(result))){
+		conversora.str("");
+		conversora.clear();
+		conversora << DIRETORIO_DE_MUSICAS << "song" << contador << ".txt"; //<< contador << ".txt";
+		result = conversora.str();
 		contador++;
-		sstm << n_a << DIRETORIO_DE_MUSICAS << contador;
-		result = sstm.str();
 	}
 
-	cout << result << endl;
-	ifstream  src (ConverteStringChar(newFile));
-  ofstream  dst(ConverteStringChar(result));
+	ifstream  arquivo_origem(ConverteStringChar(newFile));
+	if (arquivo_origem.is_open()) {
+  ofstream  arquivo_destino(ConverteStringChar(result));
+	arquivo_destino << arquivo_origem.rdbuf();
+	cout << "Musica " << newFile << " adicionada com sucesso" << endl;
+  }
+	else cout << "Erro ao adicionar música" << endl;
 
-	dst << src.rdbuf();
+	arquivo_origem.close();
 }
 
 bool file_exists(const char *fileName)
@@ -48,6 +57,33 @@ bool file_exists(const char *fileName)
     ifstream infile(fileName);
     return infile.good();
 }
+
+void RemoveMusica (string titulo)
+{
+	int escolha = 1;
+	vector <Musica> lista = BuscaMusica(titulo,escolha);
+	string decisao;
+	int i,indice;
+
+	for (i = 0; i < lista.size();i++){
+	cout << "Para excluir a musica " << lista[i].getTitulo() << "\t" << lista[i].getNomeArquivo() << " digite " << (i+1) <<  endl;
+  }
+	cout << "Digite 0 para cancelar e voltar ao menu." << endl;
+	cin >> indice;
+	cin.ignore();
+	if (indice > lista.size())
+	{
+		cout << "A musica selecionada não existe!" << endl;
+	}
+	else if (indice == 0) {}
+	else {
+	if( remove(lista[indice-1].getNomeArquivo()) != 0 )
+    perror( "Erro ao apagar arquivo" );
+  else
+    cout << "Musica apagada com sucesso" << endl;
+	}
+}
+
 
 /* Inicialização para linkar bibliotecas dinamicas ao modulo perl */
 EXTERN_C void xs_init(pTHX)
@@ -153,7 +189,7 @@ void RetornaMusicaInteira (vector <Musica> resultados) {
 	int i,indice;
 
 	for (i = 0; i < resultados.size();i++){
-	cout << "Para exibir a letra inteira da musica " << resultados[i].getTitulo() << " digite " << (i+1) <<  endl;
+	cout << "Para exibir a letra inteira da musica " << resultados[i].getTitulo() << '\t' << resultados[i].getNomeArquivo() << " digite " << (i+1) <<  endl;
   }
 	cout << "Digite 0 para voltar ao menu de pesquisa." << endl;
 	cin >> indice;
@@ -170,7 +206,7 @@ void RetornaMusicaInteira (vector <Musica> resultados) {
 /* Realiza a busca por musicas e gera um vetor de resultados com as possiveis musicas compatíveis com a pesquisa.
 	 Também chama a função RetornaMusicaInteira para o usuário visualizar a letra inteira de uma musica
 */
-void BuscaMusica (string musica) {
+vector <Musica> BuscaMusica (string musica, int escolha) {
 	int i = -1;
 	vector <Musica> resultados;
 	Musica musicaResultante;
@@ -214,7 +250,9 @@ void BuscaMusica (string musica) {
 	perl_destruct(my_perl);
 	perl_free(my_perl);
 
-	RetornaMusicaInteira(resultados);                       												/* Chama a função responsável por listar os resultados e */																																										/* imprimir a musica inteira. 													 */
+	if (escolha == 0) {RetornaMusicaInteira(resultados);}                       												/* Chama a função responsável por listar os resultados e */																																										/* imprimir a musica inteira. 													 */\
+
+	return resultados;
 }
 
 /* Imprime o submenu para o usuário realizar uma pesquisa por Artista, Título, Data, Trecho ou Dupla
@@ -244,7 +282,7 @@ void ImprimeMenuPesquisa () {
          case 2:
              cout << "Digite o titulo a ser buscado:" << endl;
              getline(cin,busca);
-						 BuscaMusica(busca);
+						 BuscaMusica(busca,0);
              break;
 
          case 3:
@@ -264,6 +302,39 @@ void ImprimeMenuPesquisa () {
              cout << "Digite o segundo trecho a ser buscado:" << endl;
              getline(cin,busca2);
              ObtemPesquisa(ConverteStringChar("Dupla"),ConverteStringChar(busca),ConverteStringChar(busca2));
+             break;
+         case 0:
+             break;
+       }
+  }
+}
+
+
+void ImprimeMenu () {
+  int i=1;
+  string entrada;
+     while (i != 0) {
+  	 cout << "Olá, bem-vindo ao menu de seleção do SongManager!" << endl
+     << "Escolha 1 para fazer uma pesquisa nas músicas cadastradas" << endl
+     << "Escolha 2 para adicionar uma música ao sistema." << endl
+     << "Escolha 3 para remover uma música cadastrada." << endl
+     << "Escolha 0 para sair do programa." << endl;
+       cout << "\nEscolha a opção desejada:" << endl;
+       cin >> i;
+       cin.ignore();
+       switch (i) {
+         case 1:
+             ImprimeMenuPesquisa();
+             break;
+         case 2:
+             cout << "Digite o nome do arquivo a ser inserido no sistema (\"nome.txt\")" << endl;
+             getline(cin,entrada);
+						 NovaMusica(entrada);
+             break;
+         case 3:
+             cout << "Digite parte do titulo da musica a ser removida:" << endl;
+             getline(cin,entrada);
+             RemoveMusica(entrada);
              break;
          case 0:
              break;

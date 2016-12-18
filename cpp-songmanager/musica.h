@@ -5,7 +5,7 @@
 #include <fstream>
 #include <cstring>
 
-#define DIRETORIO_DE_MUSICAS "./"
+#define DIRETORIO_DE_MUSICAS "./songs/"
 
 using namespace std;
 

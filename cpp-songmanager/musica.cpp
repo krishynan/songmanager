@@ -18,9 +18,8 @@ string Musica::getTitulo() {return Titulo;}
 string Musica::getData() {return Data;}
 string Musica::getTrecho() {return Trecho;}
 char *Musica::getNomeArquivo() {
-  string diretorioMaisNome = DIRETORIO_DE_MUSICAS + NomeArquivo;
-  char *Nome_Arquivo = new char[diretorioMaisNome.length() + 1];
-	strcpy(Nome_Arquivo, diretorioMaisNome.c_str());
+  char *Nome_Arquivo = new char[NomeArquivo.length() + 1];
+	strcpy(Nome_Arquivo, NomeArquivo.c_str());
 	return Nome_Arquivo;
   }
 
