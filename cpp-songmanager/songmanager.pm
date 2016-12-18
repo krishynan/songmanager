@@ -110,8 +110,7 @@ my $tipoPesquisa = $_[0];
 my $procurado = $_[1];
 my $termo1 = $_[2];
 my ($achados,$atual,$dia,$mes,$ano);
-my @titulos;
-my @nomesArquivos;
+my @titulos_E_Arquivos;
 $achados = "";
 
 	foreach my $arquivos (glob("songs/*.txt")) {
@@ -125,13 +124,13 @@ $achados = "";
 					$achados .= "Musica dele:";
 					$achados .= EncontraTitulo($arquivo);
 					$achados .= "\n";
-					push @titulos, $atual;
+					push @titulos_E_Arquivos, $atual;
 				}
 				else {
 					if ($atual =~ /[\w\s]*$procurado[\w\s]*/i) {  #se nao for exato mas ainda acha
 						if (!($achados =~ /[\w\s]*$atual[\w\s]*/i)){  #confere se ja nao sugeriu esse artista antes
 							$achados .= "Artista possivel:$atual\n";
-							push @titulos, $atual;
+							push @titulos_E_Arquivos, $atual;
 						}
 					}
 				}
@@ -145,8 +144,8 @@ $achados = "";
 				else {
 					if ($atual =~ /[\w\s]*$procurado[\w\s]*/i) {  #nao exato retorna o titulo
 						$achados .= "Musica possivel:$atual\n";
-						push @titulos, $atual;
-						push @nomesArquivos, $arquivos;
+						push @titulos_E_Arquivos, $atual;
+						push @titulos_E_Arquivos, $arquivos;
 					}
 				}
 			}
@@ -156,8 +155,8 @@ $achados = "";
 					$achados .= "Musica:";
 					$achados .= EncontraTitulo($arquivo);
 					$achados .= "\nTrecho:\n$atual\n";
-					push @titulos, $atual;
-					push @nomesArquivos, $arquivos;
+					push @titulos_E_Arquivos, $atual;
+					push @titulos_E_Arquivos, $arquivos;
 				}
 			}
 			if ($tipoPesquisa =~ /^d(?:upla)?/i) {
@@ -166,8 +165,8 @@ $achados = "";
 					$achados .= "Musica:";
 					$achados .= EncontraTitulo($arquivo);
 					$achados .= "\nTrecho:\n$atual\n";
-					push @titulos, $atual;
-					push @nomesArquivos, $arquivos;
+					push @titulos_E_Arquivos, $atual;
+					push @titulos_E_Arquivos, $arquivos;
 				}
 			}
 			if ($tipoPesquisa =~ /^L(?:ançamento)?/i) {
@@ -175,14 +174,14 @@ $achados = "";
 				if ($procurado eq $ano) {
 					$achados .= EncontraTitulo($arquivo);
 					$achados .= "\n";
-					push @titulos, $atual;
-					push @nomesArquivos, $arquivos;
+					push @titulos_E_Arquivos, $atual;
+					push @titulos_E_Arquivos, $arquivos;
 				}
 			}
 		}
 	}
 	print $achados;
-	return @titulos,@nomesArquivos;
+	return @titulos_E_Arquivos;
 }
 # Preloaded methods go here.
 
