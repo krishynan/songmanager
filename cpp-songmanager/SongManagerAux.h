@@ -2,6 +2,10 @@
 #include <perl.h>
 #include <iostream>
 #include <string>
+#include <vector>
+#include "musica.h"
+
+#define SongManagerPerl  "songmanager.pm"
 
 using namespace std;
 
@@ -16,3 +20,9 @@ void ObtemPesquisa (char *, char *, char *);
 void ImprimeMenu();
 
 char *ConverteStringChar (string);
+
+void ImprimeMusica (Musica);
+
+void RetornaMusicasArtista (vector <string>);
+
+void BuscaArtista (string);

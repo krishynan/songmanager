@@ -19,16 +19,14 @@ our @ISA = qw(Exporter);
 # If you do not need this, moving things directly into @EXPORT or @EXPORT_OK
 # will save memory.
 our %EXPORT_TAGS = ( 'all' => [ qw(ValidaArquivo EncontraAutor EncontraTitulo EncontraData EncontraLetra EncontraLetraDupla PesquisaGlobal
-
 ) ] );
 
 #our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 our @EXPORT_OK = qw( ValidaArquivo EncontraAutor EncontraTitulo EncontraData EncontraLetra EncontraLetraDupla PesquisaGlobal );
 our @EXPORT = qw(
-
 );
 
-our $VERSION = '0.01';
+our $VERSION = '0.03';
 
 sub ValidaArquivo{
 	my $arquivo = $_[0];

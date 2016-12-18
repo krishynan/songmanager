@@ -4,12 +4,18 @@ LD=g++
 CCFLAGS=$(shell perl -MExtUtils::Embed -e ccopts)
 LDFLAGS=$(shell perl -MExtUtils::Embed -e ldopts)
 
+AUXILIAR = musica
 OBJECTS = $(PROGRAM)Aux
-POBJECTS=$(PROGRAM).o
+POBJECTS= $(PROGRAM).o
 
 PROGRAM = SongManager
 
-all: $(PROGRAM) $(OBJECTS).o
+all: $(PROGRAM) $(OBJECTS).o $(AUXILIAR).o
+
+objects: $(OBJECTS).o
+
+$(AUXILIAR).o: $(AUXILIAR).cpp
+		$(CC) -o $@ -c $<
 
 $(OBJECTS).o: $(OBJECTS).cpp
 		$(CC) $(CCFLAGS) -o $@ -c $<
@@ -17,8 +23,8 @@ $(OBJECTS).o: $(OBJECTS).cpp
 $(PROGRAM).o: $(PROGRAM).cpp
 		$(CC) $(CCFLAGS) -o $@ -c $<
 
-$(PROGRAM): $(PROGRAM).o $(OBJECTS).o
-		$(LD) -o $@ $(OBJECTS).o $< $(LDFLAGS)
+$(PROGRAM): $(PROGRAM).o $(OBJECTS).o $(AUXILIAR).o
+		$(LD) -o $@ $(OBJECTS).o $(AUXILIAR).o $< $(LDFLAGS)
 
 clean:
-	rm -f $(PROGRAM) $(POBJECTS) $(OBJECTS).o
+	rm -vf $(PROGRAM) $(POBJECTS) $(OBJECTS).o $(AUXILIAR).o

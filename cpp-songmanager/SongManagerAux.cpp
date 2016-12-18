@@ -7,6 +7,10 @@
 using namespace std;
 
 
+void ImprimeMusica (Musica musica) {
+		musica.getMusicaInteira();
+}
+
 char * ConverteStringChar (string entrada)
 {
 	char *saida = new char[entrada.length() + 1];
@@ -32,7 +36,7 @@ EXTERN_C void xs_init(pTHX)
 
 void ObtemPesquisa (char *busca, char *termo, char *termo2)
 {
-	char *my_argv[] = {ConverteStringChar(""), ConverteStringChar("songmanager.pm")}; /* Nome do programa .pl */
+	char *my_argv[] = {ConverteStringChar(""), ConverteStringChar(SongManagerPerl)}; /* Nome do programa .pl */
 	my_perl = perl_alloc();
   perl_construct (my_perl);             /* */
   perl_parse(my_perl, xs_init, 2, my_argv, NULL);
@@ -51,6 +55,68 @@ void ObtemPesquisa (char *busca, char *termo, char *termo2)
 	perl_free(my_perl);
 
 }
+
+void RetornaMusicasArtista (vector <string> resultados) {
+	string decisao;
+	int i,indice;
+
+	for (i = 0; i < resultados.size();i++){
+	cout << "Para visualizar todas as musicas do artista " << resultados[i] << " digite " << (i+1) << endl;
+  }
+	cin >> indice;
+	cin.ignore();
+
+	cout << "Deseja visualizar todas as musicas desse artista? s/n" << endl;
+	getline(cin,decisao);
+	if (!(decisao.compare("s"))) {
+		ObtemPesquisa(ConverteStringChar("Autor"),ConverteStringChar(resultados[indice -1]),NULL);
+	}
+}
+
+void BuscaArtista (string autor) {
+
+		vector <string> resultado;
+		string retornoPilha;
+		int i = -1;
+
+		char *my_argv[] = {ConverteStringChar(""), ConverteStringChar(SongManagerPerl)}; /* Nome do programa .pl */
+		my_perl = perl_alloc();
+		perl_construct (my_perl);             /* */
+		perl_parse(my_perl, xs_init, 2, my_argv, NULL);
+		PL_exit_flags |= PERL_EXIT_DESTRUCT_END;
+
+    dSP;                      /* Inicialização da pilha */
+    ENTER;
+    //SAVETMPS;                 /* Criação de variáveis temporárias */
+    PUSHMARK(SP);             /* Ponteiro para pilha */
+    //XPUSHs(sv_2mortal((newSVpv(ConverteStringChar(autor),autor.length()))));  /* Coloca autor na pilha */
+    //PUTBACK;                         /* Torna o ponteiro local de pilha em global */
+		char *args[] = {ConverteStringChar("Autor"),ConverteStringChar(autor),NULL};
+
+    call_argv("PesquisaGlobal", G_ARRAY, args);
+    SPAGAIN;                         /* Atualiza o ponteiro de Pilha */
+		//cout << "O autor retornado é \n" <<  POPp  << '\t' << POPp << endl; /* faz o pop do valor retornado da pilha */
+
+
+
+		do {
+			 i++;
+			 //cout << i << '\t';
+			 retornoPilha = POPp;
+			 if (!(retornoPilha.empty())) {resultado.push_back(retornoPilha);}
+			 //cout << resultado[i] << endl;
+		 } while(!(retornoPilha.empty()));
+
+    PUTBACK;
+    FREETMPS;                        /* libera os valores da pilha */
+    LEAVE;
+
+		perl_destruct(my_perl);
+		perl_free(my_perl);
+
+		RetornaMusicasArtista(resultado);
+
+		}
 
 void ImprimeMenu () {
 
@@ -72,7 +138,9 @@ void ImprimeMenu () {
              case 1:
                  cout << "Digite o autor a ser buscado:" << endl;
                  getline(cin,busca);
-                 ObtemPesquisa(ConverteStringChar("Autor"),ConverteStringChar(busca),NULL);
+								 BuscaArtista(busca);
+                 //ObtemPesquisa(ConverteStringChar("Autor"),ConverteStringChar(busca),NULL);
+								 //RetornaMusicasArtista(busca);
                  break;
              case 2:
                  cout << "Digite o titulo a ser buscado:" << endl;
