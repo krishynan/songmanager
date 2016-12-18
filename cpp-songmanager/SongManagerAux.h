@@ -17,7 +17,7 @@ EXTERN_C void boot_DynaLoader (pTHX_ CV* cv);
 
 void ObtemPesquisa (char *, char *, char *);
 
-void ImprimeMenu();
+void ImprimeMenuPesquisa();
 
 char *ConverteStringChar (string);
 
@@ -26,3 +26,11 @@ void ImprimeMusica (Musica);
 void RetornaMusicasArtista (vector <string>);
 
 void BuscaArtista (string);
+
+void BuscaMusica (string);
+
+void RetornaMusicaInteira(vector <Musica>);
+
+bool file_exists(const char *);
+
+void newMusicFile(string);

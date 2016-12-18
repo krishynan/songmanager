@@ -1,11 +1,17 @@
 #include "musica.h"
 #include <string>
 
+Musica::Musica () {}
+
 Musica::Musica (string t, string a, string n_a) : Titulo (t), Autor (a), NomeArquivo (n_a) {}
 
 Musica::Musica (string t, string a, string tr, string n_a) : Titulo (t), Autor (a), Trecho (tr), NomeArquivo (n_a) {}
 
 Musica::Musica (string t, string a, string tr, string d, string n_a) : Titulo (t), Autor (a), Trecho (tr), Data (d), NomeArquivo (n_a) {}
+
+void Musica::setAutor(string a) {Autor = a;}
+void Musica::setTitulo(string t) {Titulo = t;}
+void Musica::setNomeArquivo(char *n_a) {NomeArquivo = n_a;}
 
 string Musica::getAutor() {return Autor;}
 string Musica::getTitulo() {return Titulo;}
