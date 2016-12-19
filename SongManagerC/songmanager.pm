@@ -1,5 +1,14 @@
-#package songmanager;
-#package biblioteca;
+# /*
+# #   Universidade Federal do Rio de Janeiro
+# #   Departamento de Eletronica e de Computacao
+# #   Linguagens de Programacao
+# #
+# #   Trabalho 03
+# #
+# #   Grupo:
+# #      Krishynan Shanty
+#       Nicholas Quagliani
+# */
 
 use 5.014002;
 use strict;

@@ -1,5 +1,16 @@
-#include "SongManagerAux.h"
+/*
+#   Universidade Federal do Rio de Janeiro
+#   Departamento de Eletronica e de Computacao
+#   Linguagens de Programacao
+#
+#   Trabalho 03
+#
+#   Grupo:
+#      Krishynan Shanty
+      Nicholas Quagliani
+*/
 
+#include "SongManagerAux.h"
 
 using namespace std;
 /* Funções para melhorar a estética do texto impresso na tela */
