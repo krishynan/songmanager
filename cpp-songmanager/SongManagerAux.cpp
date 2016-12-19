@@ -1,8 +1,5 @@
 #include "SongManagerAux.h"
-#include <EXTERN.h>
-#include <perl.h>
-#include <iostream>
-#include <string>
+
 
 using namespace std;
 /* Funções para melhorar a estética do texto impresso na tela */
@@ -18,10 +15,6 @@ void FormataImpressao ()
 	cout << endl;
 }
 /* */
-/* Chama o método da classe Musica */
-void ImprimeMusica (Musica musica) {
-		musica.getMusicaInteira();
-}
 
 /* A API do PERL requer que diversos argumentos sejam do tipo char*, essa função é chamada para realizar a conversão */
 char * ConverteStringChar (string entrada)
@@ -42,26 +35,25 @@ string InsereDiretorio (string nome_arquivo)
 void NovaMusica(string novoArquivo)
 {
 	int contador=1;
-	int Arquivo_e_valido;																														 /* Chama a subrotina ValidaArquivo para conferir se a formatação do */
-																																									 /* arquivo é valida */
-	char *my_argv[] = {ConverteStringChar(""), ConverteStringChar(SongManagerPerl)}; /* Nome do programa .pl */
+	int Arquivo_e_valido;
+	char *my_argv[] = {ConverteStringChar(""), ConverteStringChar(SongManagerPerl)};
 	my_perl = perl_alloc();
-  perl_construct (my_perl);             /* */
+  perl_construct (my_perl);
   perl_parse(my_perl, xs_init, 2, my_argv, NULL);
   PL_exit_flags |= PERL_EXIT_DESTRUCT_END;
-	dSP;                      /* Inicialização da pilha */
+	dSP;                      											/* Inicialização da pilha */
 	ENTER;
-	PUSHMARK(SP);             /* Ponteiro para pilha */
+	PUSHMARK(SP);             											/* Ponteiro para pilha */
 
 	char *args[] = {ConverteStringChar(novoArquivo),NULL};
-	call_argv("ValidaArquivo", G_DISCARD, args);
-
-	SPAGAIN;                         /* Atualiza o ponteiro de Pilha */
+	call_argv("ValidaArquivo", G_DISCARD, args);																		 /* Chama a subrotina ValidaArquivo para conferir se a formatação do */
+																																									 /* arquivo é valida */
+	SPAGAIN;                         							 /* Atualiza o ponteiro de Pilha */
 
 	Arquivo_e_valido = POPi;
 
 	PUTBACK;
-	FREETMPS;                        /* libera os valores da pilha */
+	FREETMPS;                        							/* libera os valores da pilha */
 	LEAVE;
 
 	perl_destruct(my_perl);
@@ -72,13 +64,14 @@ void NovaMusica(string novoArquivo)
 	{
 		string result;
 		ostringstream conversora;
-		conversora << DIRETORIO_DE_MUSICAS << "song" << contador << ".txt"; //<< contador << ".txt";
+		conversora << DIRETORIO_DE_MUSICAS << "song" << contador << ".txt";
 		result = conversora.str();
 
-		while (file_exists(ConverteStringChar(result))){
+		while (file_exists(ConverteStringChar(result))){															/* Confere na pasta /songs/ qual a ultima musica inserida para */
+																																									/* salvar a nova musica como song(#+1) 												 */
 			conversora.str("");
 			conversora.clear();
-			conversora << DIRETORIO_DE_MUSICAS << "song" << contador << ".txt"; //<< contador << ".txt";
+			conversora << DIRETORIO_DE_MUSICAS << "song" << contador << ".txt";
 			result = conversora.str();
 			contador++;
 		}
@@ -95,6 +88,8 @@ void NovaMusica(string novoArquivo)
 	}
 	else cout << "O arquivo inserido não é válido" << endl;
 }
+
+/* Função que retorna true caso o arquivo de nome fileName já exista na pasta. */
 bool file_exists(const char *fileName)
 {
     ifstream infile(fileName);
@@ -104,11 +99,11 @@ bool file_exists(const char *fileName)
 /* Retira uma música do diretório de músicas */
 void RemoveMusica (string titulo)
 {
-	vector <Musica> lista = BuscaMusica(titulo,1);
-	string decisao;
+	vector <Musica> lista = BuscaMusica(titulo,1);																		/* Busca a musica a ser removida no repositório, com contexto igual a 1  */
+	string decisao;																																		/* pois não é necessaria a função de exibir a música inteira nesse caso. */
 	int i,indice;
 
-	for (i = 0; i < lista.size();i++){
+	for (i = 0; i < lista.size();i++){																								/* Lista as musicas retornadas da pesquisa     */
 	cout << "Para excluir a musica " << lista[i].getTitulo() << "\t" << lista[i].getNomeArquivo() << " digite " << (i+1) <<  endl;
   }
 	cout << "Digite 0 para cancelar e voltar ao menu." << endl;
@@ -141,22 +136,20 @@ EXTERN_C void xs_init(pTHX)
 /* Função que imprime os resultados da busca(exceto busca por artista e titulo) realizada pelo usuário. */
 void ObtemPesquisa (char *busca, char *termo, char *termo2)
 {
-	char *my_argv[] = {ConverteStringChar(""), ConverteStringChar(SongManagerPerl)}; /* Nome do programa .pl */
+	char *my_argv[] = {ConverteStringChar(""), ConverteStringChar(SongManagerPerl)};
 	my_perl = perl_alloc();
-  perl_construct (my_perl);             /* */
+  perl_construct (my_perl);
   perl_parse(my_perl, xs_init, 2, my_argv, NULL);
   PL_exit_flags |= PERL_EXIT_DESTRUCT_END;
 
-
-  if (termo2 != NULL) {
-    char *args[] = {busca,termo,termo2,NULL};
+  if (termo2 != NULL) {																		/* Confere quantos termos foram pesquisados, para passar a */
+    char *args[] = {busca,termo,termo2,NULL};							/* quantidade certa de argumentos ao programa em Perl      */
     call_argv("PesquisaGlobal", G_DISCARD, args);
   }
   else {
     char *args[] = {busca,termo,NULL};
     call_argv("PesquisaGlobal", G_DISCARD, args);
   }
-
 
 	perl_destruct(my_perl);
 	perl_free(my_perl);
@@ -200,22 +193,17 @@ void BuscaArtista (string autor) {
 
   dSP;                      /* Inicialização da pilha */
   ENTER;
-  //SAVETMPS;                 /* Criação de variáveis temporárias */
   PUSHMARK(SP);             /* Ponteiro para pilha */
-  //XPUSHs(sv_2mortal((newSVpv(ConverteStringChar(autor),autor.length()))));  /* Coloca autor na pilha */
-  //PUTBACK;                         /* Torna o ponteiro local de pilha em global */
+
 	char *args[] = {ConverteStringChar("Autor"),ConverteStringChar(autor),NULL};
 
   call_argv("PesquisaGlobal", G_ARRAY, args);
   SPAGAIN;                         /* Atualiza o ponteiro de Pilha */
-	//cout << "O autor retornado é \n" <<  POPp  << '\t' << POPp << endl; /* faz o pop do valor retornado da pilha */
 
 	do {
 		 i++;
-		 //cout << i << '\t';
 		 retornoPilha = POPp;
 		 if (!(retornoPilha.empty())) {resultado.push_back(retornoPilha);}
-		 //cout << resultado[i] << endl;
 	 } while(!(retornoPilha.empty()));
 
   PUTBACK;
@@ -225,7 +213,7 @@ void BuscaArtista (string autor) {
 	perl_destruct(my_perl);
 	perl_free(my_perl);
 
-	RetornaMusicasArtista(resultado);
+	RetornaMusicasArtista(resultado);  /* Chama a função para exibir todas as musicas dos artistas que resultaram da pesquisa */
 }
 
 
@@ -246,24 +234,24 @@ void RetornaMusicaInteira (vector <Musica> resultados) {
 				cout << "A musica selecionada não existe!" << endl;
 			}
 			else if (indice == 0) {}
-			else {resultados[indice-1].getMusicaInteira();}
+			else {resultados[indice-1].getMusicaInteira();}           /* Chama o método da classe Musica para imprimir a musica inteira */
 		}
 }
 
 
 /* Realiza a busca por musicas e gera um vetor de resultados com as possiveis musicas compatíveis com a pesquisa.
-	 Também chama a função RetornaMusicaInteira para o usuário visualizar a letra inteira de uma musica
+	 Também chama a função RetornaMusicaInteira para o usuário visualizar a letra inteira de uma musica.
+	 Recebe o inteiro escolha, que define o contexto em que a função foi chamada.
 */
 vector <Musica> BuscaMusica (string musica, int escolha) {
 	int i = -1;
 	vector <Musica> resultados;
 	Musica musicaResultante;
-	//vector <string> resultado;
 	string retornoPilha;
 
-	char *my_argv[] = {ConverteStringChar(""), ConverteStringChar(SongManagerPerl)}; /* Nome do programa .pl */
+	char *my_argv[] = {ConverteStringChar(""), ConverteStringChar(SongManagerPerl)};
 	my_perl = perl_alloc();
-	perl_construct (my_perl);             /* */
+	perl_construct (my_perl);
 	perl_parse(my_perl, xs_init, 2, my_argv, NULL);
 	PL_exit_flags |= PERL_EXIT_DESTRUCT_END;
 
@@ -292,13 +280,14 @@ vector <Musica> BuscaMusica (string musica, int escolha) {
 	 } while(!(retornoPilha.empty()));
 
   PUTBACK;
-  FREETMPS;                       																								/* libera os valores da pilha */
+  FREETMPS;                       																							/* libera os valores da pilha */
   LEAVE;
 
 	perl_destruct(my_perl);
 	perl_free(my_perl);
 
-	if (escolha == 0) {RetornaMusicaInteira(resultados);}                       												/* Chama a função responsável por listar os resultados e */																																										/* imprimir a musica inteira. 													 */\
+	if (escolha == 0) {RetornaMusicaInteira(resultados);}  												/* Se o contexto da função for de pesquisa, chama a função responsável */
+																																								/* por listar os resultados e imprimir a musica inteira */
 
 	return resultados;
 }
@@ -311,73 +300,87 @@ void ImprimeMenuPesquisa () {
   string busca,busca2;
 	ClearScreen();
 
-		  cout << endl << "Escolha 1 para Pesquisa por um autor. Retorna todas musicas do autor se for exato" << endl
-		     << "Escolha 2 para Pesquisa por um titulo." << endl
-		     << "Escolha 3 para Pesquisa por um ano de lancamento. Retorna os nomes das musicas" << endl
-		     << "Escolha 4 para Pesquisa por um trecho. Retorna o titulo e um pedaco do trecho achado" << endl
-		     << "Escolha 5 para Pesquisa por DOIS trechos desconectados. Retorna o titulo e um pedaco do trecho achado" << endl
-		     << "Escolha 0 para voltar para o menu principal." << endl;
+		  cout << "Escolha 1 para Pesquisa por um autor. Retorna todas musicas do autor se for exato" << endl
+			     << "Escolha 2 para Pesquisa por um titulo." << endl
+			     << "Escolha 3 para Pesquisa por um ano de lancamento. Retorna os nomes das musicas" << endl
+			     << "Escolha 4 para Pesquisa por um trecho. Retorna o titulo e um pedaco do trecho achado" << endl
+			     << "Escolha 5 para Pesquisa por DOIS trechos desconectados. Retorna o titulo e um pedaco do trecho achado" << endl
+			     << "Escolha 0 para voltar para o menu principal." << endl;
 			 while (i != 0) {
 			 FormataImpressao();
 			 cout << "\nEscolha o tipo de pesquisa desejada:" << endl;
        cin >> i;
-       cin.ignore();
-       switch (i) {
-         case 1:
-             cout << "Digite o autor a ser buscado:" << endl;
-             getline(cin,busca);
-						 BuscaArtista(busca);
-             break;
-         case 2:
-             cout << "Digite o titulo a ser buscado:" << endl;
-             getline(cin,busca);
-						 BuscaMusica(busca,0);
-             break;
+			 while(cin.fail())
+			 {
+			         cout << "Por favor, digite um numero" << endl;
+			         cin.clear();
+			         cin.ignore(256,'\n');
+			         cin >> i;
+			  }
+			  cin.ignore();
+			     switch (i) {
+			       case 1:
+			           cout << "Digite o autor a ser buscado:" << endl;
+			           getline(cin,busca);
+								 BuscaArtista(busca);
+			           break;
+			       case 2:
+			           cout << "Digite o titulo a ser buscado:" << endl;
+			           getline(cin,busca);
+								 BuscaMusica(busca,0);
+			           break;
 
-         case 3:
-             cout << "Digite o ano a ser buscado:" << endl;
-             getline(cin,busca);
-             ObtemPesquisa(ConverteStringChar("Lançamento"),ConverteStringChar(busca),NULL);
-             break;
-         case 4:
-             cout << "Digite o trecho a ser buscado:" << endl;
-             getline(cin,busca);
-             ObtemPesquisa(ConverteStringChar("Pedaço"),ConverteStringChar(busca),NULL);
-             break;
+			       case 3:
+			           cout << "Digite o ano a ser buscado:" << endl;
+			           getline(cin,busca);
+			           ObtemPesquisa(ConverteStringChar("Lançamento"),ConverteStringChar(busca),NULL);
+			           break;
+			       case 4:
+			           cout << "Digite o trecho a ser buscado:" << endl;
+			           getline(cin,busca);
+			           ObtemPesquisa(ConverteStringChar("Pedaço"),ConverteStringChar(busca),NULL);
+			           break;
 
-         case 5:
-             cout << "Digite o primeiro trecho a ser buscado:" << endl;
-             getline(cin,busca);
-             cout << "Digite o segundo trecho a ser buscado:" << endl;
-             getline(cin,busca2);
-             ObtemPesquisa(ConverteStringChar("Dupla"),ConverteStringChar(busca),ConverteStringChar(busca2));
-             break;
-         case 0:
-             break;
-       }
+			       case 5:
+			           cout << "Digite o primeiro trecho a ser buscado:" << endl;
+			           getline(cin,busca);
+			           cout << "Digite o segundo trecho a ser buscado:" << endl;
+			           getline(cin,busca2);
+			           ObtemPesquisa(ConverteStringChar("Dupla"),ConverteStringChar(busca),ConverteStringChar(busca2));
+			           break;
+			       case 0:
+			           break;
+			     }
   }
 }
 
+/* Imprime o menu principal do programa */
 void ImprimeMenu () {
   int i=1;
   string entrada;
 	ClearScreen();
 	while (i != 0) {
 	FormataImpressao();
-	 cout << "Olá, bem-vindo ao menu de seleção do SongManager!" << endl
-   << "Escolha 1 para pesquisar as músicas cadastradas" << endl
-   << "Escolha 2 para listar todas as músicas de um artista." << endl
-	 << "Escolha 3 para visualizar a letra completa de uma música." << endl
-	 << "Escolha 4 para adicionar uma música ao sistema." << endl
-   << "Escolha 5 para remover uma música cadastrada." << endl
-   << "Escolha 0 para sair do programa." << endl;
-     cout << "\nEscolha a opção desejada:" << endl;
-     cin >> i;
-     cin.ignore();
-     switch (i) {
-       case 1:
-           ImprimeMenuPesquisa();
-           break;
+	 cout  << "Olá, bem-vindo ao menu de seleção do SongManager!" << endl
+			   << "Escolha 1 para pesquisar as músicas cadastradas" << endl
+			   << "Escolha 2 para listar todas as músicas de um artista." << endl
+				 << "Escolha 3 para visualizar a letra completa de uma música." << endl
+				 << "Escolha 4 para adicionar uma música ao sistema." << endl
+			   << "Escolha 5 para remover uma música cadastrada." << endl
+			   << "Escolha 0 para sair do programa." << endl;
+   cout << "\nEscolha a opção desejada:" << endl;
+   cin >> i;
+	 while(cin.fail()) {
+	         cout << "Por favor, digite um numero" << endl;
+	         cin.clear();
+	         cin.ignore(256,'\n');
+	         cin >> i;
+	    }
+	  cin.ignore();
+	  switch (i) {
+	     case 1:
+	         ImprimeMenuPesquisa();
+	         break;
 			 case 2:
 					 cout << "Digite o artista a ser buscado:" << endl;
 					 getline(cin,entrada);
@@ -389,17 +392,17 @@ void ImprimeMenu () {
 					 BuscaMusica(entrada,0);
 					 break;
 			 case 4:
-           cout << "Digite o nome do arquivo a ser inserido no sistema (\"nome.txt\")" << endl;
-           getline(cin,entrada);
+	         cout << "Digite o nome do arquivo a ser inserido no sistema (Formato: \"nome.txt\")" << endl;
+	         getline(cin,entrada);
 					 NovaMusica(entrada);
-           break;
-       case 5:
-           cout << "Digite parte do titulo da musica a ser removida:" << endl;
-           getline(cin,entrada);
-           RemoveMusica(entrada);
-           break;
-       case 0:
-           break;
-     }
-	 }
+	         break;
+	     case 5:
+	         cout << "Digite parte do titulo da musica a ser removida:" << endl;
+	         getline(cin,entrada);
+	         RemoveMusica(entrada);
+	         break;
+	     case 0:
+	         break;
+	   }
+ 	}
 }

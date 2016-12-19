@@ -26,17 +26,13 @@ class Musica {
  void setAutor(string);
  void setTitulo(string);
  void setNomeArquivo(char *);
-// void setTitulo ();
 
  void getMusicaInteira();
 
  void print ();
 
  private:
-
- string Titulo, Autor, Data, Trecho;
- string NomeArquivo;
+ string Titulo, Autor, Data, Trecho, NomeArquivo;
 };
-
 
 #endif

@@ -1,5 +1,4 @@
 #include "musica.h"
-#include <string>
 
 Musica::Musica () {}
 
@@ -17,19 +16,19 @@ string Musica::getAutor() {return Autor;}
 string Musica::getTitulo() {return Titulo;}
 string Musica::getData() {return Data;}
 string Musica::getTrecho() {return Trecho;}
-char *Musica::getNomeArquivo() {
+char *Musica::getNomeArquivo() {                              /* Método para retornar nome do arquivo como char * para ser utilizado quando abrir arquivo */
   char *Nome_Arquivo = new char[NomeArquivo.length() + 1];
 	strcpy(Nome_Arquivo, NomeArquivo.c_str());
 	return Nome_Arquivo;
   }
 
-void Musica::print() {
+void Musica::print() {                                        /* Imprime os principais parâmetros da música */
   cout << getTitulo () << "\t" <<
   getAutor () << "\t" <<
   getNomeArquivo () << endl;
 }
 
-void Musica::getMusicaInteira() { //Imprime a Letra inteira da música, pesquisando o nome do arquivo na pasta e abrindo-o
+void Musica::getMusicaInteira() {                             /* Imprime a Letra inteira da música, pesquisando o nome do arquivo na pasta e abrindo-o */
     string novaLinha;
     ifstream meuArquivo (getNomeArquivo());
     if (meuArquivo.is_open())
@@ -40,5 +39,5 @@ void Musica::getMusicaInteira() { //Imprime a Letra inteira da música, pesquisa
       }
       meuArquivo.close();
     }
-    else cout << "Unable to open file" << endl;
+    else cout << "Erro ao abrir arquivo." << endl;
 }
