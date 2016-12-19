@@ -5,7 +5,7 @@
 #include <string>
 
 using namespace std;
-
+/* Funções para melhorar a estética do texto impresso na tela */
 void ClearScreen () {
 		int i;
 		for (i=0; i<5; i++) {cout << endl;}
@@ -17,11 +17,13 @@ void FormataImpressao ()
 	for (i=0; i<10; i++) {cout << "****";}
 	cout << endl;
 }
-
+/* */
+/* Chama o método da classe Musica */
 void ImprimeMusica (Musica musica) {
 		musica.getMusicaInteira();
 }
 
+/* A API do PERL requer que diversos argumentos sejam do tipo char*, essa função é chamada para realizar a conversão */
 char * ConverteStringChar (string entrada)
 {
 	char *saida = new char[entrada.length() + 1];
@@ -29,13 +31,14 @@ char * ConverteStringChar (string entrada)
 	return saida;
 }
 
+/* Insere o diretorio definido em DIRETORIO_DE_MUSICAS ao nome do arquivo */
 string InsereDiretorio (string nome_arquivo)
 {
 	string result;
 	result = (DIRETORIO_DE_MUSICAS + nome_arquivo);
 	return result;
 }
-
+/* Função para cadastrar uma nova música no diretorio de músicas */
 void NovaMusica(string novoArquivo)
 {
 	int contador=1;
@@ -98,6 +101,7 @@ bool file_exists(const char *fileName)
     return infile.good();
 }
 
+/* Retira uma música do diretório de músicas */
 void RemoveMusica (string titulo)
 {
 	vector <Musica> lista = BuscaMusica(titulo,1);
@@ -162,20 +166,22 @@ void ObtemPesquisa (char *busca, char *termo, char *termo2)
 void RetornaMusicasArtista (vector <string> resultados) {
 	string decisao;
 	int i,indice;
-
-	for (i = 0; i < resultados.size();i++){
-	cout << "Para visualizar todas as musicas do artista " << resultados[i] << " digite " << (i+1) << endl;
-  }
-	cout << "Digite 0 para voltar ao menu de pesquisa." << endl;
-	cin >> indice;
-	cin.ignore();
-	if (indice > resultados.size())
+  if (resultados.size())																						/* Testa se a busca retornou algum valor */
 	{
-		cout << "O artista selecionado não existe!" << endl;
-	}
-	else if (indice == 0) {}
-	else {ObtemPesquisa(ConverteStringChar("Autor"),ConverteStringChar(resultados[indice -1]),NULL);}
-
+			for (i = 0; i < resultados.size();i++){
+				cout << "Para visualizar todas as musicas do artista \"" << resultados[i] << "\" digite " << (i+1) << endl;
+			}
+			cout << "Digite 0 para voltar ao menu de pesquisa." << endl;
+			cin >> indice;
+			cin.ignore();
+			if (indice > resultados.size())
+			{
+				cout << "O artista selecionado não existe!" << endl;
+			}
+			else if (indice == 0) {}
+			else {ObtemPesquisa(ConverteStringChar("Autor"),ConverteStringChar(resultados[indice -1]),NULL);}
+	 }
+	 else {cout << "Não foram obtidos resultados para essa pesquisa" << endl;}
 }
 
 /* Realiza a busca por artista e gera um vetor de resultados com os possiveis artistas compatíveis com a pesquisa.
@@ -227,20 +233,21 @@ void BuscaArtista (string autor) {
 void RetornaMusicaInteira (vector <Musica> resultados) {
 	string decisao;
 	int i,indice;
-
-	for (i = 0; i < resultados.size();i++){
-	cout << "Para exibir a letra inteira da musica " << resultados[i].getTitulo() << '\t' << resultados[i].getNomeArquivo() << " digite " << (i+1) <<  endl;
-  }
-	cout << "Digite 0 para voltar ao menu de pesquisa." << endl;
-	cin >> indice;
-	cin.ignore();
-	if (indice > resultados.size())
-	{
-		cout << "A musica selecionada não existe!" << endl;
-	}
-	else if (indice == 0) {}
-	else {resultados[indice-1].getMusicaInteira();}
-
+	if (resultados.size())																				/* Testa se a busca retornou algum valor */
+	 {
+			for (i = 0; i < resultados.size();i++){
+			cout << "Para exibir a letra inteira da musica \"" << resultados[i].getTitulo() << "\" digite " << (i+1) <<  endl;
+		  }
+			cout << "Digite 0 para voltar ao menu de pesquisa." << endl;
+			cin >> indice;
+			cin.ignore();
+			if (indice > resultados.size())
+			{
+				cout << "A musica selecionada não existe!" << endl;
+			}
+			else if (indice == 0) {}
+			else {resultados[indice-1].getMusicaInteira();}
+		}
 }
 
 
@@ -304,16 +311,15 @@ void ImprimeMenuPesquisa () {
   string busca,busca2;
 	ClearScreen();
 
-		  cout << endl << "Olá, bem-vindo ao menu de seleção do SongManager!" << endl
-		     << "Escolha 1 para Pesquisa por um autor. Retorna todas musicas do autor se for exato" << endl
-		     << "Escolha 2 para Pesquisa por um titulo. Retorna a musica inteira se for exato" << endl
+		  cout << endl << "Escolha 1 para Pesquisa por um autor. Retorna todas musicas do autor se for exato" << endl
+		     << "Escolha 2 para Pesquisa por um titulo." << endl
 		     << "Escolha 3 para Pesquisa por um ano de lancamento. Retorna os nomes das musicas" << endl
 		     << "Escolha 4 para Pesquisa por um trecho. Retorna o titulo e um pedaco do trecho achado" << endl
 		     << "Escolha 5 para Pesquisa por DOIS trechos desconectados. Retorna o titulo e um pedaco do trecho achado" << endl
-		     << "Escolha 0 para sair do programa." << endl;
+		     << "Escolha 0 para voltar para o menu principal." << endl;
 			 while (i != 0) {
 			 FormataImpressao();
-			 cout << "\nEscolha a opção desejada:" << endl;
+			 cout << "\nEscolha o tipo de pesquisa desejada:" << endl;
        cin >> i;
        cin.ignore();
        switch (i) {
@@ -352,7 +358,6 @@ void ImprimeMenuPesquisa () {
   }
 }
 
-
 void ImprimeMenu () {
   int i=1;
   string entrada;
@@ -360,9 +365,11 @@ void ImprimeMenu () {
 	while (i != 0) {
 	FormataImpressao();
 	 cout << "Olá, bem-vindo ao menu de seleção do SongManager!" << endl
-   << "Escolha 1 para fazer uma pesquisa nas músicas cadastradas" << endl
-   << "Escolha 2 para adicionar uma música ao sistema." << endl
-   << "Escolha 3 para remover uma música cadastrada." << endl
+   << "Escolha 1 para pesquisar as músicas cadastradas" << endl
+   << "Escolha 2 para listar todas as músicas de um artista." << endl
+	 << "Escolha 3 para visualizar a letra completa de uma música." << endl
+	 << "Escolha 4 para adicionar uma música ao sistema." << endl
+   << "Escolha 5 para remover uma música cadastrada." << endl
    << "Escolha 0 para sair do programa." << endl;
      cout << "\nEscolha a opção desejada:" << endl;
      cin >> i;
@@ -371,12 +378,22 @@ void ImprimeMenu () {
        case 1:
            ImprimeMenuPesquisa();
            break;
-       case 2:
+			 case 2:
+					 cout << "Digite o artista a ser buscado:" << endl;
+					 getline(cin,entrada);
+					 BuscaArtista(entrada);
+					 break;
+			 case 3:
+					 cout << "Digite o titulo a ser buscado:" << endl;
+					 getline(cin,entrada);
+					 BuscaMusica(entrada,0);
+					 break;
+			 case 4:
            cout << "Digite o nome do arquivo a ser inserido no sistema (\"nome.txt\")" << endl;
            getline(cin,entrada);
 					 NovaMusica(entrada);
            break;
-       case 3:
+       case 5:
            cout << "Digite parte do titulo da musica a ser removida:" << endl;
            getline(cin,entrada);
            RemoveMusica(entrada);
